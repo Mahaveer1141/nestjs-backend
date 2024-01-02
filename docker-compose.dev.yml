@@ -12,11 +12,16 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: nestjs-backend
     ports:
       - '3000:3000'
     depends_on:
       - postgres_db
+    volumes:
+      - ./:/app/
     environment:
       DATABASE_URL: postgres://mahsoni:password@postgres_db:5432/nestjs_db?schema=public
 
