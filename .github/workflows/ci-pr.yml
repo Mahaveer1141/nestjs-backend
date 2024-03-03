@@ -1,7 +1,8 @@
-name: CI
+name: CI-pr
 on:
-  - push
-  - pull_request_target
+  pull_request_target:
+    branches:
+      - master
 jobs:
   Tests:
     runs-on: ubuntu-latest
@@ -25,13 +26,8 @@ jobs:
       - run: yarn install
       - run: yarn build
       - run: yarn lint
-  Build-Image:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "hello"
   Coverage:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
