@@ -1,0 +1,30 @@
+version: '1'
+services:
+  postgres_db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: nestjs_db
+      POSTGRES_USER: mahsoni
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: nestjs-backend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres_db
+    volumes:
+      - ./:/app/
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://mahsoni:password@postgres_db:5432/nestjs_db?schema=public
+
+volumes:
+  postgres_data:
