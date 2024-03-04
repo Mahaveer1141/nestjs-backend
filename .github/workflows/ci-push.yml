@@ -1,18 +1,8 @@
 name: CI-push
-on:
-  - push
+
+on: push
+
 jobs:
-  Tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '19.x'
-      - run: yarn install
-      - run: yarn build
-      - run: yarn test
   Lint:
     runs-on: ubuntu-latest
     steps:
@@ -24,3 +14,27 @@ jobs:
       - run: yarn install
       - run: yarn build
       - run: yarn lint
+
+  Unit-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '19.x'
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test
+
+  E2E-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '19.x'
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test:e2e
