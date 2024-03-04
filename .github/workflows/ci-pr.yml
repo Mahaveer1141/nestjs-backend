@@ -47,5 +47,5 @@ jobs:
         with:
           node-version: '19.x'
       - uses: ArtiomTr/jest-coverage-report-action@v2
-          with:
-            test-script: yarn jest -o --ci --json --coverage --testLocationInResults --outputFile=report.json
+        with:
+          test-script: yarn jest -o --ci --json --coverage --testLocationInResults --outputFile=report.json
