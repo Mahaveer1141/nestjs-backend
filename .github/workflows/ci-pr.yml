@@ -43,8 +43,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: '19.x'
       - uses: ArtiomTr/jest-coverage-report-action@v2
+          with:
+            test-script: yarn jest -o --ci --json --coverage --testLocationInResults --outputFile=report.json
