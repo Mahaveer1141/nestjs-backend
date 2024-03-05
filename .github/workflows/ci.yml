@@ -1,0 +1,99 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js version 19
+        uses: actions/setup-node@v3
+        with:
+          node-version: '19.x'
+      - run: yarn install
+      - run: yarn build
+      - run: yarn lint
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js version 19
+        uses: actions/setup-node@v3
+        with:
+          node-version: '19.x'
+      - run: npm install
+      - name: Run check for vulnerabilities
+        run: npm audit
+
+  Unit-Test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: nestjs_db_test
+          POSTGRES_USER: mahsoni
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js version 19
+        uses: actions/setup-node@v3
+        with:
+          node-version: '19.x'
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test
+        env:
+          DATABASE_URL: postgres://mahsoni:password@localhost:5432/nestjs_db_test?schema=public
+
+  E2E-Test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: nestjs_db_test
+          POSTGRES_USER: mahsoni
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js version 19
+        uses: actions/setup-node@v3
+        with:
+          node-version: '19.x'
+      - run: yarn install
+      - run: yarn build
+      - run: npx prisma generate
+      - run: yarn test:e2e
+        env:
+          DATABASE_URL: postgres://mahsoni:password@localhost:5432/nestjs_db_test?schema=public
+
+  Coverage:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js version 19
+        uses: actions/setup-node@v3
+        with:
+          node-version: '19.x'
+      - name: Generate test coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
