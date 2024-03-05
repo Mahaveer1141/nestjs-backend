@@ -48,4 +48,4 @@ jobs:
           node-version: '19.x'
       - uses: ArtiomTr/jest-coverage-report-action@v2
         with:
-          test-script: yarn jest --changedSince=master --ci --json --coverage --testLocationInResults --outputFile=report.json
+          test-script: npx jest --changedSince=master --ci --json --coverage --testLocationInResults --outputFile=report.json
