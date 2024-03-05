@@ -87,13 +87,37 @@ jobs:
   Coverage:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: nestjs_db_test
+          POSTGRES_USER: mahsoni
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Use Node.js version 19
         uses: actions/setup-node@v3
         with:
           node-version: '19.x'
+      - run: yarn install
+      - run: yarn build
+      - run: yarn test:cov-report
+        env:
+          DATABASE_URL: postgres://mahsoni:password@localhost:5432/nestjs_db_test?schema=public
       - name: Generate test coverage report
         uses: ArtiomTr/jest-coverage-report-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          skip-step: all
+          threshold: 80
